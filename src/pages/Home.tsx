@@ -7,7 +7,7 @@ const Home: React.FC = () => {
             <Typography variant="h4">Welcome to E-Shop</Typography>
             <Typography variant="subtitle1">Your one-stop online shopping destination</Typography>
             <Button variant="contained" sx={{ mt: 2 }}>
-                Shop Now
+                Shop Now FPT
             </Button>
         </Box>
     );
