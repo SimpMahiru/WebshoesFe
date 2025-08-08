@@ -1,0 +1,134 @@
+import React from 'react';
+import { Box, Typography, Grid, Card, CardContent, CardMedia, CircularProgress, Alert, Tooltip } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { Product } from '../services/API/ProductApi';
+
+interface LatestProductsProps {
+    products: Product[];
+    loading: boolean;
+    error: string | null;
+}
+
+const stripHtml = (html: string) => {
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+};
+
+const LatestProducts: React.FC<LatestProductsProps> = ({ products, loading, error }) => {
+    const navigate = useNavigate();
+
+    if (loading) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error) {
+        return (
+            <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
+                <Alert severity="error">{error}</Alert>
+            </Box>
+        );
+    }
+
+    return (
+        <Box sx={{ my: 4 }}>
+            <Typography variant="h4" component="h2" gutterBottom>
+                Sản Phẩm Mới Nhất
+            </Typography>
+            <Grid container spacing={3}>
+                {products.map((product) => (
+                    <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
+                        <Card 
+                            sx={{ 
+                                height: '100%', 
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                cursor: 'pointer',
+                                '&:hover': {
+                                    transform: 'translateY(-4px)',
+                                    boxShadow: 3,
+                                    transition: 'all 0.3s ease-in-out'
+                                }
+                            }}
+                            onClick={() => navigate(`/product/${product.id}`)}
+                        >
+                            <CardMedia
+                                component="img"
+                                height="200"
+                                image={product.image_url || 'https://via.placeholder.com/300x200?text=No+Image'}
+                                alt={product.name}
+                                sx={{ objectFit: 'cover' }}
+                            />
+                            <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                                <Tooltip 
+                                    title={product.name}
+                                    placement="top"
+                                    arrow
+                                >
+                                    <Box sx={{ position: 'relative', width: '100%' }}>
+                                        <Typography 
+                                            gutterBottom 
+                                            variant="h6" 
+                                            component="h3" 
+                                            sx={{
+                                                fontWeight: 600,
+                                                lineHeight: 1.2,
+                                                height: '2.4em',
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                                wordWrap: 'break-word'
+                                            }}
+                                        >
+                                            {product.name}
+                                        </Typography>
+                                    </Box>
+                                </Tooltip>
+                                
+                                <Tooltip 
+                                    title={product.description ? stripHtml(product.description) : 'Không có mô tả'}
+                                    placement="top"
+                                    arrow
+                                >
+                                    <Typography 
+                                        variant="body2" 
+                                        color="text.secondary"
+                                        sx={{
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 2,
+                                            WebkitBoxOrient: 'vertical',
+                                            overflow: 'hidden',
+                                            wordWrap: 'break-word',
+                                            height: '2.5em',
+                                            lineHeight: '1.25em'
+                                        }}
+                                    >
+                                        {product.description ? stripHtml(product.description) : 'Không có mô tả'}
+                                    </Typography>
+                                </Tooltip>
+
+                                <Typography 
+                                    variant="h6" 
+                                    color="error" 
+                                    sx={{ 
+                                        mt: 'auto',
+                                        fontWeight: 600 
+                                    }}
+                                >
+                                    {product.price.toLocaleString()} VNĐ
+                                </Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
+    );
+};
+
+export default LatestProducts; 
